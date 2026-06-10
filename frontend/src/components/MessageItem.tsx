@@ -1,0 +1,54 @@
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import { CodeBlock } from './CodeBlock';
+import type { Message } from '../types';
+
+interface MessageItemProps {
+  message: Message;
+}
+
+export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
+  const isUser = message.role === 'user';
+
+  return (
+    <div className={`message-wrapper ${message.role}`}>
+      <div className="message-bubble">
+        {isUser ? (
+          <div style={{ whiteSpace: 'pre-wrap' }}>{message.content}</div>
+        ) : (
+          <ReactMarkdown
+            components={{
+              // Strip default <pre> wrapper — CodeBlock handles its own container
+              pre({ children }) {
+                return <>{children}</>;
+              },
+              code({ className, children, ...props }) {
+                const match = /language-(\w+)/.exec(className || '');
+                const language = match ? match[1] : '';
+                const codeContent = String(children).replace(/\n$/, '');
+                const isInline = !className && !codeContent.includes('\n');
+
+                if (!isInline) {
+                  return (
+                    <CodeBlock
+                      code={codeContent}
+                      language={language || 'text'}
+                    />
+                  );
+                }
+
+                return (
+                  <code className="inline-code" {...props}>
+                    {children}
+                  </code>
+                );
+              },
+            }}
+          >
+            {message.content}
+          </ReactMarkdown>
+        )}
+      </div>
+    </div>
+  );
+};
