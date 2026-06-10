@@ -63,6 +63,7 @@ ORBIT is currently under active development.
 ### AI Layer
 - Python
 - Ollama
+- llama.cpp (Very Soon)
 
 ### Database
 - PostgreSQL
