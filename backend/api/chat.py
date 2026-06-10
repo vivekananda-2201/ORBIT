@@ -1,8 +1,10 @@
 # pyrefly: ignore [missing-import]
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.services.chat import generate_response
+from fastapi.responses import StreamingResponse
+
 from backend.schemas.chat import ChatRequest
+from backend.services.chat import generate_stream
 
 app = FastAPI()
 
@@ -15,6 +17,5 @@ app.add_middleware(
 )
 
 @app.post("/chat")
-def chat_with_model(request : ChatRequest):
-    response = generate_response(request.message)
-    return {"response" : response}
+def chat_with_model(request: ChatRequest):
+    return StreamingResponse(generate_stream(request.message), media_type="text/plain")

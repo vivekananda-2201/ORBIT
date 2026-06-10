@@ -90,23 +90,59 @@ export default function App() {
     }
 
     try {
-      // API call using the modular service
-      const responseContent = await sendChatMessage(currentChat.messages);
-      
+      const requestMessages = [...currentChat.messages];
       const assistantMessage: Message = {
         role: 'assistant',
-        content: responseContent
+        content: ''
       };
 
       currentChat.messages = [...currentChat.messages, assistantMessage];
+      updatedConversations = updatedConversations.map(chat =>
+        chat.id === currentChat.id
+          ? { ...chat, messages: currentChat.messages }
+          : chat
+      );
       setConversations([...updatedConversations]);
+
+      await sendChatMessage(requestMessages, (chunk) => {
+        assistantMessage.content += chunk;
+
+        updatedConversations = updatedConversations.map(chat =>
+          chat.id === currentChat.id
+            ? {
+                ...chat,
+                messages: chat.messages.map((message, index) =>
+                  index === chat.messages.length - 1
+                    ? { ...message, content: assistantMessage.content }
+                    : message
+                )
+              }
+            : chat
+        );
+
+        setConversations([...updatedConversations]);
+      });
     } catch (error) {
       console.error("Chat API error:", error);
       const errorMessage: Message = {
         role: 'assistant',
         content: `⚠️ **Connection Error**: Unable to contact the local AI engine. Please ensure your backend server is running on port 5000 and Ollama is active.\n\nDetails:\n\`\`\`text\n${error instanceof Error ? error.message : String(error)}\n\`\`\``
       };
-      currentChat.messages = [...currentChat.messages, errorMessage];
+
+      currentChat.messages = currentChat.messages.map((message, index) =>
+        index === currentChat.messages.length - 1 ? errorMessage : message
+      );
+      updatedConversations = updatedConversations.map(chat =>
+        chat.id === currentChat.id
+          ? {
+              ...chat,
+              messages: chat.messages.map((message, index) =>
+                index === chat.messages.length - 1 ? errorMessage : message
+              )
+            }
+          : chat
+      );
+
       setConversations([...updatedConversations]);
     } finally {
       setIsLoading(false);
