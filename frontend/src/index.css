@@ -757,6 +757,22 @@ body {
   border: none !important;
 }
 
+/* --- KaTeX Math Expressions --- */
+.message-wrapper.assistant .message-bubble .katex {
+  font-size: 1em;
+  color: var(--text-primary);
+}
+
+.message-wrapper.assistant .message-bubble .katex-display {
+  margin: 14px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.message-wrapper.assistant .message-bubble .katex-html {
+  color: var(--text-primary);
+}
+
 /* Input Area Styling */
 .chat-input-container {
   padding: 16px 24px 24px;

@@ -1,5 +1,8 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { CodeBlock } from './CodeBlock';
 import type { Message } from '../types';
 
@@ -17,6 +20,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           <div style={{ whiteSpace: 'pre-wrap' }}>{message.content}</div>
         ) : (
           <ReactMarkdown
+            remarkPlugins={[remarkMath]}
+            rehypePlugins={[rehypeKatex]}
             components={{
               // Strip default <pre> wrapper — CodeBlock handles its own container
               pre({ children }) {
