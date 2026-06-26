@@ -14,5 +14,10 @@ router = APIRouter(
 @router.post("")
 def chat_with_model(request: ChatRequest):
     return StreamingResponse(
-        generate_stream(message = request.message, modelname = request.modelname), 
-        media_type="text/plain")
+        generate_stream(
+            message=request.message,
+            modelname=request.modelname,
+            config=request.config,
+        ),
+        media_type="text/event-stream",
+    )

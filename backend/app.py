@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.modules.chat.router import router as chat_router
 from backend.modules.models.router import router as models_router
+from backend.modules.arena.router import router as arena_router
 
 
 app = FastAPI(
@@ -20,3 +21,4 @@ app.add_middleware(
 
 app.include_router(chat_router, prefix="/api/v1")
 app.include_router(models_router, prefix="/api/v1")
+app.include_router(arena_router, prefix="/api/v1")
