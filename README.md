@@ -1,10 +1,10 @@
-# ORBIT
+# ORBIT Lab
 
 ### Operational Research and Benchmarking Interface for Transformers
 
-ORBIT is a lightweight, local-first AI engineering workspace focused on open-source language models.
+ORBIT Lab is a lightweight, local-first AI engineering workspace focused on open-source language models.
 
-The project aims to simplify the workflow of AI developers by providing a unified environment for managing, testing, evaluating, and benchmarking local AI systems.
+The project aims to simplify the workflow of AI developers by providing a unified environment for managing, testing, evaluating, and benchmarking local AI systems running via Ollama.
 
 ---
 
@@ -16,7 +16,8 @@ The project aims to simplify the workflow of AI developers by providing a unifie
 
 **Want technical details?**
 
-→ [**Chat Interface Documentation**](./Documents_For_Developers/ChatInterface.md) - Architecture, API, and implementation details
+→ [**Chat Interface Documentation**](./Documents_For_Developers/ChatInterface.md) - Chat architecture, SSE streaming, and system prompts  
+→ [**Arena Benchmark Documentation**](./Documents_For_Developers/ArenaBenchmark.md) - Benchmarking architecture, metrics extraction, and real-time visualization  
 
 ---
 
@@ -25,190 +26,78 @@ The project aims to simplify the workflow of AI developers by providing a unifie
 | Document | Purpose |
 |----------|---------|
 | [GETTING_STARTED.md](./Documents_For_Developers/GETTING_STARTED.md) | Complete setup guide with all dependencies and commands |
-| [ChatInterface.md](./Documents_For_Developers/ChatInterface.md) | Technical architecture, API reference, and implementation details |
+| [ChatInterface.md](./Documents_For_Developers/ChatInterface.md) | Technical architecture of the unified chat interface |
+| [ArenaBenchmark.md](./Documents_For_Developers/ArenaBenchmark.md) | Details on the multi-model benchmarking pipeline |
 | [README.md](./README.md) | Project overview and vision (this file) |
 
 ---
 
-## Current Focus
+## 🎯 Core Features
 
+### 1. Chat Workspace
+- **Real-time SSE Streaming**: Live chunk-by-chunk markdown rendering.
+- **System Prompts & Parameters**: Fine-tune context length, temperature, top-p, and set custom personas.
+- **Performance Metrics**: View native token metrics (Tokens/sec, Time-To-First-Token) immediately after generation.
+- **Session Persistence**: Drafts, configurations, and chat histories are seamlessly saved to `localStorage`.
 
-The initial development phase is focused on building the foundation:
+### 2. Model Arena
+- **Multi-Model Benchmarking**: Queue up to 6 local Ollama models simultaneously.
+- **Sequential Execution**: Models are benchmarked one-by-one to preserve system resources and hardware safety.
+- **Live Chunk Streaming**: Watch each model generate its response in real-time.
 
-- Chat Interface
-- Chat History & Persistence
-- Context Management
-- Ollama Model Management
-- System Resource Monitoring
-
----
-
-## Long-Term Vision
-
-ORBIT will gradually evolve into a complete AI engineering platform featuring:
-
-- Multiple Models Evaluation & Benchmarking
-- Prompt Testing
-- Local AI Infrastructure Tooling
-
----
-
-## Core Principles
-
-- Local First
-- Open Source
-- Lightweight
-- Developer Focused
-- Privacy Friendly
+### 3. Analysis Dashboard
+- **Performance Footprint**: Visual Radar Chart normalizing Speed, Latency, Efficiency, and Volume.
+- **Timeline Breakdown**: Stacked Composed Chart detailing Load Time, TTFT, and Generation Time.
+- **Hardware Integration**: Monitor simulated local VRAM and GPU thermals.
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- React
-- TypeScript
-- Vite
+- **Framework**: React 19 + TypeScript + Vite
+- **Routing**: React Router DOM (with Keep-Alive architecture)
+- **Data Visualization**: Recharts
+- **Markdown Processing**: React-Markdown + Remark-GFM + Rehype-Katex
+- **Icons**: Lucide React
+- **Styling**: Vanilla CSS Modules (CSS Variables & Flexbox/Grid)
 
 ### Backend
-- FastAPI (Python)
-
-### AI Layer
-- Python
-- Ollama
-- llama.cpp (Coming Soon)
-
-### Database
-- PostgreSQL (Planned)
-
----
-
-## 🎯 Core Principles
-
-- **Local First** - Run everything on your machine
-- **Open Source** - Free and transparent
-- **Lightweight** - Minimal dependencies
-- **Developer Focused** - Built for AI engineers
-- **Privacy Friendly** - Your data stays on your device
+- **Framework**: FastAPI (Python)
+- **AI Integration**: Official Ollama Python Client
+- **Architecture**: Modular API router system
+- **Validation**: Pydantic
 
 ---
 
 ## 📊 Project Status
 
-🚧 **Early Development (Pre-Alpha)**
+🚧 **Beta Phase**
 
-ORBIT is currently under active development with focus on the chat interface and session management.
-
-### Current Features
-✅ Real-time streaming chat responses  
-✅ Session history with localStorage persistence  
-✅ Markdown rendering with code blocks  
-✅ Responsive dark-themed UI  
-✅ Copy-to-clipboard for code  
-✅ Local Ollama integration 
-✅ Model Selection
-
----
-
-## 🗺️ Long-Term Vision
-
-ORBIT will gradually evolve into a complete AI engineering platform featuring:
-
-- Model Evaluation & Benchmarking
-- Prompt Testing & Optimization
-- Local AI Infrastructure Tooling
-- Resource Monitoring & Analytics
-
----
-
-## 📖 Getting Help
-
-### For Setup Issues
-See the [**Getting Started Guide**](./Documents_For_Developers/GETTING_STARTED.md) for:
-- Prerequisites and installation steps
-- Troubleshooting common issues
-- Quick command reference
-
-### For Technical Questions
-See [**Chat Interface Documentation**](./Documents_For_Developers/ChatInterface.md) for:
-- System architecture
-- API reference
-- Implementation details
-- File structure
-
-### Common Issues
-- **Backend won't start?** → [Troubleshooting Guide](./Documents_For_Developers/GETTING_STARTED.md#troubleshooting)
-- **Frontend errors?** → Check backend is running on http://127.0.0.1:5000
-- **Model download slow?** → Run `ollama pull qwen3.5:4b` separately
-- **Port conflicts?** → See [Port Already in Use](./Documents_For_Developers/GETTING_STARTED.md#issue-port-already-in-use)
-
----
-
-## 🔗 Quick Links
-
-- **Get Started:** [GETTING_STARTED.md](./Documents_For_Developers/GETTING_STARTED.md)
-- **Architecture:** [ChatInterface.md](./Documents_For_Developers/ChatInterface.md)
-- **Ollama Models:** [ollama.ai/library](https://ollama.ai/library)
-- **FastAPI Docs:** [fastapi.tiangolo.com](https://fastapi.tiangolo.com)
-- **React Guide:** [react.dev](https://react.dev)
-
----
-
-## 💡 Key Commands
-
-```bash
-# Setup
-python -m venv .venv
-source .venv/bin/activate  # macOS/Linux or .venv\Scripts\activate (Windows)
-pip install fastapi uvicorn ollama pydantic
-
-# Backend
-python main.py
-
-# Frontend
-cd frontend
-npm install
-npm run dev
-
-# Build
-npm run build
-```
-
-See [**Quick Command Reference**](./Documents_For_Developers/GETTING_STARTED.md#quick-command-reference) for more.
-
----
-
-## 📄 License
-
-TBD
+ORBIT has completed its Phase 2 expansion. Both the Chat Workspace and the Model Arena are fully operational with shared streaming utilities, global state persistence, and rich data visualization.
 
 ---
 
 ## 👨‍💻 Development Notes
 
 ### Project Structure
-```
+```text
 ORBIT/
-├── Documents_For_Developers/    # All documentation
-│   ├── GETTING_STARTED.md       # ← Start here!
-│   ├── ChatInterface.md         # Technical docs
-│   └── Walkthrough.md           # Additional reference
-├── backend/                     # Python API & services
-├── frontend/                    # React + TypeScript UI
-├── main.py                      # Server entry point
-├── README.md                    # This file
-└── rough.py                     # Experimental code
+├── Documents_For_Developers/    # Technical Documentation
+├── backend/                     # Python FastAPI Backend
+│   ├── modules/                 # Endpoint routers (chat/, arena/)
+│   └── utils/                   # Shared logic (llm.py)
+├── frontend/                    # React UI
+│   ├── src/
+│   │   ├── components/          # Feature-based folder structure
+│   │   │   ├── chat/
+│   │   │   ├── arena/
+│   │   │   └── common/
+│   │   ├── pages/               # React Router pages
+│   │   ├── services/            # API fetchers (chatService, arenaService)
+│   │   └── types/               # TypeScript Definitions
+├── main.py                      # Uvicorn entry point
+└── README.md                    
 ```
-
-### Getting Started with Development
-1. Read [GETTING_STARTED.md](./Documents_For_Developers/GETTING_STARTED.md)
-2. Follow setup steps in "Step 1-5"
-3. Review [ChatInterface.md](./Documents_For_Developers/ChatInterface.md) for architecture
-4. Explore code in `backend/` and `frontend/` folders
-
----
-
-> Building the engineering workspace I always wished existed for local AI development.
 
 **Last Updated:** June 2026
-
