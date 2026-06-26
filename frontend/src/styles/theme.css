@@ -1,0 +1,97 @@
+/* ORBIT — local-first AI laboratory. Pure-black canvas, subtle cyberpunk cyan. */
+
+:root {
+  color-scheme: dark;
+
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.95 0.004 250);
+  --card: oklch(0.16 0.006 250);
+  --card-foreground: oklch(0.95 0.004 250);
+  --popover: oklch(0.13 0.006 250);
+  --popover-foreground: oklch(0.95 0.004 250);
+  --primary: oklch(0.82 0.13 195);
+  --primary-foreground: oklch(0.14 0.02 220);
+  --secondary: oklch(0.21 0.006 250);
+  --secondary-foreground: oklch(0.95 0.004 250);
+  --muted: oklch(0.18 0.005 250);
+  --muted-foreground: oklch(0.62 0.012 245);
+  --accent: oklch(0.24 0.02 200);
+  --accent-foreground: oklch(0.95 0.004 250);
+  --destructive: oklch(0.62 0.21 18);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.82 0.13 195);
+  --chart-1: oklch(0.82 0.13 195);
+  --chart-2: oklch(0.8 0.14 80);
+  --chart-3: oklch(0.76 0.16 145);
+  --chart-4: oklch(0.7 0.13 255);
+  --chart-5: oklch(0.7 0.17 25);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.08 0.005 250);
+  --sidebar-foreground: oklch(0.95 0.004 250);
+  --sidebar-primary: oklch(0.82 0.13 195);
+  --sidebar-primary-foreground: oklch(0.14 0.02 220);
+  --sidebar-accent: oklch(0.21 0.006 250);
+  --sidebar-accent-foreground: oklch(0.95 0.004 250);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.82 0.13 195);
+
+  /* Legacy aliases for existing components */
+  --bg-app: var(--background);
+  --bg-sidebar: var(--sidebar);
+  --bg-chat: var(--background);
+  --bg-bubble-user: var(--secondary);
+  --bg-bubble-assistant: var(--card);
+  --bg-panel: var(--card);
+  --bg-input: var(--card);
+  --border-color: var(--border);
+  --border-color-active: oklch(0.82 0.13 195 / 40%);
+  --accent-text: var(--primary);
+  --accent-glow: oklch(0.82 0.13 195 / 15%);
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: var(--muted-foreground);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Utility surfaces from prototype */
+.orbit-grid {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 3%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 3%) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.orbit-glow {
+  box-shadow:
+    0 0 0 1px oklch(0.82 0.13 195 / 25%),
+    0 0 24px oklch(0.82 0.13 195 / 12%);
+}
+
+.orbit-scan {
+  background: linear-gradient(180deg, transparent, oklch(0.82 0.13 195 / 6%), transparent);
+}
+
+@keyframes orbit-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.orbit-pulse {
+  animation: orbit-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes orbit-blink {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 1; }
+}
+
+.orbit-blink {
+  animation: orbit-blink 1.4s steps(2, end) infinite;
+}

@@ -47,11 +47,8 @@ The initial development phase is focused on building the foundation:
 
 ORBIT will gradually evolve into a complete AI engineering platform featuring:
 
-- Model Evaluation & Benchmarking
+- Multiple Models Evaluation & Benchmarking
 - Prompt Testing
-- RAG Experimentation
-- Vector Database Management
-- Agent Workflow Testing
 - Local AI Infrastructure Tooling
 
 ---
@@ -119,9 +116,6 @@ ORBIT will gradually evolve into a complete AI engineering platform featuring:
 
 - Model Evaluation & Benchmarking
 - Prompt Testing & Optimization
-- RAG Experimentation
-- Vector Database Management
-- Agent Workflow Testing
 - Local AI Infrastructure Tooling
 - Resource Monitoring & Analytics
 

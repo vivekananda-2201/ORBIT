@@ -1,0 +1,169 @@
+import { useState, useEffect } from 'react';
+import { ChatWorkspace } from '../components/orbit/chat/ChatWorkspace';
+import type { Conversation, Message } from '../types';
+import type { ModelItem } from '../types/models_meta_data';
+import { sendChatMessage } from '../services/chatService';
+import { getModels } from '../services/ModelsMetaData';
+
+export default function ChatPage() {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [models, setModels] = useState<ModelItem[]>([]);
+  const [selectedModel, setSelectedModel] = useState('');
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('orbit_conversations');
+      if (stored) {
+        const parsed = JSON.parse(stored) as Conversation[];
+        setConversations(parsed);
+        if (parsed.length > 0) {
+          setActiveChatId(parsed[0].id);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load chats from localStorage', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (conversations.length > 0) {
+      localStorage.setItem('orbit_conversations', JSON.stringify(conversations));
+    } else {
+      localStorage.removeItem('orbit_conversations');
+    }
+  }, [conversations]);
+
+  useEffect(() => {
+    async function fetchModels() {
+      try {
+        const data = await getModels();
+        setModels(data.models);
+        setSelectedModel((prev) => prev || (data.models[0]?.model ?? ''));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchModels();
+  }, []);
+
+  const activeChat = conversations.find((c) => c.id === activeChatId) || null;
+
+  const handleNewChat = () => {
+    setActiveChatId(null);
+    setInputValue('');
+  };
+
+  const handleDeleteChat = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    const updated = conversations.filter((c) => c.id !== id);
+    setConversations(updated);
+
+    if (activeChatId === id) {
+      setActiveChatId(updated.length > 0 ? updated[0].id : null);
+    }
+  };
+
+  const handleSendMessage = async (textToSend?: string) => {
+    const text = (textToSend || inputValue).trim();
+    if (!text || isLoading) return;
+
+    if (!textToSend) {
+      setInputValue('');
+    }
+
+    setIsLoading(true);
+
+    const newUserMessage: Message = { role: 'user', content: text };
+
+    let currentChat = activeChat;
+    let updatedConversations = [...conversations];
+
+    if (!currentChat) {
+      const generatedTitle = text.length > 30 ? `${text.substring(0, 30)}...` : text;
+      currentChat = {
+        id: Date.now().toString(),
+        title: generatedTitle,
+        messages: [newUserMessage],
+        createdAt: Date.now(),
+      };
+      updatedConversations = [currentChat, ...updatedConversations];
+      setConversations(updatedConversations);
+      setActiveChatId(currentChat.id);
+    } else {
+      currentChat.messages = [...currentChat.messages, newUserMessage];
+      setConversations(updatedConversations);
+    }
+
+    try {
+      const requestMessages = [...currentChat.messages];
+      const assistantMessage: Message = { role: 'assistant', content: '' };
+
+      currentChat.messages = [...currentChat.messages, assistantMessage];
+      updatedConversations = updatedConversations.map((chat) =>
+        chat.id === currentChat!.id ? { ...chat, messages: currentChat!.messages } : chat,
+      );
+      setConversations([...updatedConversations]);
+
+      await sendChatMessage(selectedModel, requestMessages, (chunk) => {
+        assistantMessage.content += chunk;
+
+        updatedConversations = updatedConversations.map((chat) =>
+          chat.id === currentChat!.id
+            ? {
+                ...chat,
+                messages: chat.messages.map((message, index) =>
+                  index === chat.messages.length - 1
+                    ? { ...message, content: assistantMessage.content }
+                    : message,
+                ),
+              }
+            : chat,
+        );
+
+        setConversations([...updatedConversations]);
+      });
+    } catch (error) {
+      console.error('Chat API error:', error);
+      const errorMessage: Message = {
+        role: 'assistant',
+        content: `⚠️ **Connection Error**: Unable to contact the local AI engine. Please ensure your backend server is running on port 5000 and Ollama is active.\n\nDetails:\n\`\`\`text\n${error instanceof Error ? error.message : String(error)}\n\`\`\``,
+      };
+
+      updatedConversations = updatedConversations.map((chat) =>
+        chat.id === currentChat!.id
+          ? {
+              ...chat,
+              messages: chat.messages.map((message, index) =>
+                index === chat.messages.length - 1 ? errorMessage : message,
+              ),
+            }
+          : chat,
+      );
+
+      setConversations([...updatedConversations]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <ChatWorkspace
+      conversations={conversations}
+      activeChatId={activeChatId}
+      activeChat={activeChat}
+      inputValue={inputValue}
+      setInputValue={setInputValue}
+      isLoading={isLoading}
+      onSendMessage={handleSendMessage}
+      onSelectChat={setActiveChatId}
+      onDeleteChat={handleDeleteChat}
+      onNewChat={handleNewChat}
+      models={models}
+      selectedModel={selectedModel}
+      setSelectedModel={setSelectedModel}
+    />
+  );
+}

@@ -1,0 +1,43 @@
+.promptSuggestionsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .promptSuggestionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.suggestionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.suggestionCard:hover {
+  border-color: oklch(0.82 0.13 195 / 40%);
+}
+
+.suggestionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.suggestionDesc {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
