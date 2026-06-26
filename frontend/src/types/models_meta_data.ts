@@ -1,15 +1,3 @@
-export interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-export interface Conversation {
-  id: string;
-  title: string;
-  messages: Message[];
-  createdAt: number;
-}
-
 interface ModelDetails {
     parent_model: string; // Accepts empty string as per the data
     format: string;

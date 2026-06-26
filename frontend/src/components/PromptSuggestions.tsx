@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './PromptSuggestions.module.css';
 
 interface Suggestion {
   title: string;
@@ -13,15 +14,16 @@ interface PromptSuggestionsProps {
 
 export const PromptSuggestions: React.FC<PromptSuggestionsProps> = ({ suggestions, onSelect }) => {
   return (
-    <div className="prompt-suggestions-grid">
-      {suggestions.map((s, i) => (
+    <div className={styles.promptSuggestionsGrid}>
+      {suggestions.map((s) => (
         <button
-          key={i}
-          className="suggestion-card"
+          key={s.prompt}
+          type="button"
+          className={styles.suggestionCard}
           onClick={() => onSelect(s.prompt)}
         >
-          <span className="suggestion-title">{s.title}</span>
-          <span className="suggestion-desc">{s.desc}</span>
+          <span className={styles.suggestionTitle}>{s.title}</span>
+          <span className={styles.suggestionDesc}>{s.desc}</span>
         </button>
       ))}
     </div>

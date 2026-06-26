@@ -1,0 +1,117 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.exportBtn {
+  composes: glassPanel from '../styles/shared.module.css';
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--orbit-zinc-300);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.exportBtn:hover {
+  color: #fff;
+}
+
+.runBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--orbit-accent);
+  color: var(--orbit-zinc-950);
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.runBtn:hover {
+  background: #34d399;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.chartPanel {
+  composes: glassPanel from '../styles/shared.module.css';
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chartPanelWide {
+  composes: chartPanel;
+  grid-column: 1 / -1;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chartTitle {
+  font-weight: 500;
+  color: var(--orbit-zinc-200);
+}
+
+.chartMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--orbit-zinc-500);
+  font-family: var(--font-mono);
+}
+
+.refreshBtn {
+  padding: 0.375rem;
+  color: var(--orbit-zinc-500);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.refreshBtn:hover {
+  color: var(--orbit-zinc-300);
+}
+
+.chartContainer {
+  height: 300px;
+  width: 100%;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.chartContainerShort {
+  height: 250px;
+}

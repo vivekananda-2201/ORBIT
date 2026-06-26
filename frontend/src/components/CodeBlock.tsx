@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
+import styles from './CodeBlock.module.css';
 
 interface CodeBlockProps {
   code: string;
@@ -16,10 +17,10 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language }) => {
   };
 
   return (
-    <div className="code-block-container">
-      <div className="code-block-header">
-        <span className="code-block-lang">{language || 'text'}</span>
-        <button className="code-block-copy" onClick={handleCopy}>
+    <div className={styles.codeBlockContainer}>
+      <div className={styles.codeBlockHeader}>
+        <span className={styles.codeBlockLang}>{language || 'text'}</span>
+        <button className={styles.codeBlockCopy} onClick={handleCopy}>
           {copied ? (
             <>
               <Check size={12} /> Copied!
@@ -31,7 +32,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language }) => {
           )}
         </button>
       </div>
-      <pre className="code-block-content">
+      <pre className={styles.codeBlockContent}>
         <code>{code}</code>
       </pre>
     </div>

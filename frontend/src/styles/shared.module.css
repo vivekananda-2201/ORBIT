@@ -1,0 +1,72 @@
+.glassPanel {
+  background: rgba(24, 24, 27, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(39, 39, 42, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.glassPanelGlow {
+  background: rgba(24, 24, 27, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(63, 63, 70, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.05);
+  position: relative;
+}
+
+.glassPanelGlow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  border: 1px solid var(--orbit-accent);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.pageContainer {
+  max-width: 72rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-bottom: 5rem;
+}
+
+.pageContainerWide {
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 5rem;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.pageSubtitle {
+  color: var(--orbit-zinc-400);
+  font-size: 0.875rem;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.emeraldText {
+  color: var(--orbit-accent);
+}
+
+.cyanText {
+  color: var(--orbit-cyan);
+}
+
+.purpleText {
+  color: var(--orbit-purple);
+}

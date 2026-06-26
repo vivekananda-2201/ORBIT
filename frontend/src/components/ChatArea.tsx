@@ -1,8 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { Cpu, Plus, Sparkles, Info, Send } from 'lucide-react';
+
+// Types and Schemas
 import type { Conversation } from '../types';
+import type { ModelItem } from '../types/';
+
+// Props and Components
 import { MessageItem } from './MessageItem';
 import { PromptSuggestions } from './PromptSuggestions';
+import styles from './ChatArea.module.css';
 
 interface Suggestion {
   title: string;
@@ -40,6 +46,9 @@ interface ChatAreaProps {
   isLoading: boolean;
   onSendMessage: (textToSend?: string) => void;
   onNewChat: () => void;
+  models: ModelItem[];
+  selectedModel: string;
+  setSelectedModel: (val: string) => void;
 }
 
 export const ChatArea: React.FC<ChatAreaProps> = ({
@@ -49,6 +58,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   isLoading,
   onSendMessage,
   onNewChat,
+  models,
+  selectedModel,
+  setSelectedModel,
+
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -74,32 +87,41 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   };
 
   return (
-    <main className="chat-area">
+    <main className={styles.chatArea}>
       {/* Header */}
-      <header className="chat-header">
-        <div className="chat-header-info">
-          <span className="chat-header-title">
+      <header className={styles.chatHeader}>
+        <div className={styles.chatHeaderInfo}>
+          <span className={styles.chatHeaderTitle}>
             {activeChat ? activeChat.title : "New Chat"}
           </span>
-          <span className="chat-header-subtitle">
+          <span className={styles.chatHeaderSubtitle}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <Cpu size={12} /> Local LLM: qwen3.5:4b
+              <Cpu size={12} /> Model:
+              <select 
+                className={styles.modelSelect}
+                value={selectedModel} 
+                onChange={(e) => setSelectedModel(e.target.value)}
+              >
+                {models.map((item, index) => (
+                  <option key={index} value={item.model}>{item.model}</option>
+                ))}
+              </select>
             </span>
           </span>
         </div>
 
-        <div className="chat-header-actions">
-          <button className="icon-btn" onClick={onNewChat} title="New Chat">
+        <div className={styles.chatHeaderActions}>
+          <button className={styles.iconBtn} onClick={onNewChat} title="New Chat">
             <Plus size={16} />
           </button>
         </div>
       </header>
 
       {/* Messages Feed */}
-      <div className="chat-messages-container">
+      <div className={styles.chatMessagesContainer}>
         {!activeChat || activeChat.messages.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon-wrapper">
+          <div className={styles.emptyState}>
+            <div className={styles.emptyStateIconWrapper}>
               <Sparkles size={32} />
             </div>
             <h1>Welcome to ORBIT</h1>
@@ -118,12 +140,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             
             {/* Typing indicator */}
             {isLoading && (
-              <div className="message-wrapper assistant">
-                <div className="message-bubble">
-                  <div className="typing-indicator">
-                    <div className="typing-dot"></div>
-                    <div className="typing-dot"></div>
-                    <div className="typing-dot"></div>
+              <div className={`${styles.messageWrapper} ${styles.assistant}`}>
+                <div className={styles.messageBubble}>
+                  <div className={styles.typingIndicator}>
+                    <div className={styles.typingDot}></div>
+                    <div className={styles.typingDot}></div>
+                    <div className={styles.typingDot}></div>
                   </div>
                 </div>
               </div>
@@ -134,11 +156,11 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       </div>
 
       {/* Input Bar */}
-      <div className="chat-input-container">
-        <div className="input-form-wrapper">
+      <div className={styles.chatInputContainer}>
+        <div className={styles.inputFormWrapper}>
           <textarea
             ref={textareaRef}
-            className="textarea-input"
+            className={styles.textareaInput}
             rows={1}
             placeholder="Ask anything or choose a prompt..."
             value={inputValue}
@@ -147,14 +169,14 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             disabled={isLoading}
           />
           
-          <div className="input-actions">
-            <div className="input-info-hint">
+          <div className={styles.inputActions}>
+            <div className={styles.inputInfoHint}>
               <Info size={11} />
               <span>Enter to send, Shift+Enter for new line</span>
             </div>
             
             <button 
-              className="send-btn"
+              className={styles.sendBtn}
               onClick={() => onSendMessage()}
               disabled={isLoading || !inputValue.trim()}
               title="Send Message"

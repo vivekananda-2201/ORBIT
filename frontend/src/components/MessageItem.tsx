@@ -5,6 +5,7 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { CodeBlock } from './CodeBlock';
 import type { Message } from '../types';
+import styles from './MessageItem.module.css';
 
 interface MessageItemProps {
   message: Message;
@@ -14,8 +15,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const isUser = message.role === 'user';
 
   return (
-    <div className={`message-wrapper ${message.role}`}>
-      <div className="message-bubble">
+    <div className={`${styles.messageWrapper} ${styles[message.role]}`}>
+      <div className={styles.messageBubble}>
         {isUser ? (
           <div style={{ whiteSpace: 'pre-wrap' }}>{message.content}</div>
         ) : (
@@ -43,7 +44,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
                 }
 
                 return (
-                  <code className="inline-code" {...props}>
+                  <code className={styles.inlineCode} {...props}>
                     {children}
                   </code>
                 );
