@@ -13,7 +13,7 @@ import {
   LineChart,
   Check,
 } from 'lucide-react';
-import { OrbitMark } from '../OrbitMark';
+import { OrbitMark } from '../../common/OrbitMark/OrbitMark';
 import styles from './AboutContent.module.css';
 
 const PILLARS = [
@@ -93,11 +93,19 @@ export function AboutContent() {
             inside one unified workbench — all running on your own hardware.
           </p>
           <div className={styles.heroActions}>
-            <button type="button" className={styles.btnPrimary}>
+            <button 
+              type="button" 
+              className={styles.btnPrimary}
+              onClick={() => window.open('https://github.com/vivekananda-2201/ORBIT', '_blank')}
+            >
               <Star size={16} />
               Star on GitHub
             </button>
-            <button type="button" className={styles.btnSecondary}>
+            <button 
+              type="button" 
+              className={styles.btnSecondary}
+              onClick={() => window.open('https://github.com/vivekananda-2201/ORBIT', '_blank')}
+            >
               Read the docs
               <ArrowUpRight size={16} />
             </button>

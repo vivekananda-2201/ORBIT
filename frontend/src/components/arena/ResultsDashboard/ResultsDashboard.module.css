@@ -208,6 +208,7 @@
   background: var(--popover);
   padding: 0.5rem 0.75rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  z-index: 100;
 }
 
 .tooltipLabel {

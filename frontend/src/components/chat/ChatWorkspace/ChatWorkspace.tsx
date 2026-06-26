@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Copy, RefreshCw, Sliders, Gauge, Timer, Hash } from 'lucide-react';
-import type { Conversation } from '../../../types';
-import type { ModelItem } from '../../../types/models_meta_data';
-import { ChatHistory } from './ChatHistory';
-import { ModelPicker } from './ModelPicker';
-import { ParamPanel } from './ParamPanel';
-import { MessageItem } from '../../MessageItem';
-import { PromptSuggestions } from '../../PromptSuggestions';
-import { OrbitMark } from '../OrbitMark';
+import { ArrowUp, Copy, RefreshCw, Sliders } from 'lucide-react';
+import type { Conversation, ModelConfig } from '../../../types';
+import type { ModelItem } from '../../../types';
+import { ChatHistory } from '../ChatHistory/ChatHistory';
+import { ModelPicker } from '../ModelPicker/ModelPicker';
+import { ParamPanel } from '../ParamPanel/ParamPanel';
+import { MessageItem } from '../MessageItem/MessageItem';
+import { PromptSuggestions } from '../PromptSuggestions/PromptSuggestions';
+import { OrbitMark } from '../../common/OrbitMark/OrbitMark';
+import { MetricsBar } from '../../common/MetricsBar/MetricsBar';
 import styles from './ChatWorkspace.module.css';
 
 const SUGGESTIONS = [
@@ -51,6 +52,8 @@ export function ChatWorkspace({
   models,
   selectedModel,
   setSelectedModel,
+  config,
+  setConfig,
 }: {
   conversations: Conversation[];
   activeChatId: string | null;
@@ -65,6 +68,8 @@ export function ChatWorkspace({
   models: ModelItem[];
   selectedModel: string;
   setSelectedModel: (val: string) => void;
+  config: ModelConfig;
+  setConfig: React.Dispatch<React.SetStateAction<ModelConfig>>;
 }) {
   const [showParams, setShowParams] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -163,18 +168,13 @@ export function ChatWorkspace({
                     <div className={styles.assistantBody}>
                       <MessageItem message={message} compact />
                       <div className={styles.metricsBar}>
-                        <div className={styles.metric}>
-                          <Gauge size={14} strokeWidth={1.75} color="var(--primary)" />
-                          <span className={styles.metricValue}>— tok/s</span>
-                        </div>
-                        <div className={styles.metric}>
-                          <Timer size={14} strokeWidth={1.75} color="var(--primary)" />
-                          <span className={styles.metricValue}>— s</span>
-                        </div>
-                        <div className={styles.metric}>
-                          <Hash size={14} strokeWidth={1.75} color="var(--primary)" />
-                          <span className={styles.metricValue}>— tokens</span>
-                        </div>
+                        {message.metrics && (
+                          <MetricsBar
+                            tokensPerSec={message.metrics.tokens_per_sec}
+                            totalTimeMs={message.metrics.ttft_ms * 1000}
+                            tokenCount={message.metrics.eval_count}
+                          />
+                        )}
                         <div className={styles.metricActions}>
                           <button type="button" className={styles.iconBtn} aria-label="Copy">
                             <Copy size={14} strokeWidth={1.75} />
@@ -227,7 +227,7 @@ export function ChatWorkspace({
         </div>
       </div>
 
-      {showParams && <ParamPanel modelId={selectedModel} models={models} />}
+      {showParams && <ParamPanel modelId={selectedModel} models={models} config={config} setConfig={setConfig} />}
     </div>
   );
 }

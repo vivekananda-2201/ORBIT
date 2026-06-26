@@ -1,4 +1,4 @@
-import { ArenaWorkspace } from '../components/orbit/arena/ArenaWorkspace';
+import { ArenaWorkspace } from '../components/arena/ArenaWorkspace/ArenaWorkspace';
 
 export default function ArenaPage() {
   return <ArenaWorkspace />;

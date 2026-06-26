@@ -1,32 +1,48 @@
 import { useState, useEffect } from 'react';
-import { ChatWorkspace } from '../components/orbit/chat/ChatWorkspace';
-import type { Conversation, Message } from '../types';
-import type { ModelItem } from '../types/models_meta_data';
+import { ChatWorkspace } from '../components/chat/ChatWorkspace/ChatWorkspace';
+import type { Conversation, Message, ModelConfig } from '../types';
+import type { ModelItem } from '../types';
 import { sendChatMessage } from '../services/chatService';
 import { getModels } from '../services/ModelsMetaData';
 
 export default function ChatPage() {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [inputValue, setInputValue] = useState('');
+  const [conversations, setConversations] = useState<Conversation[]>(() => {
+    const stored = localStorage.getItem('orbit_conversations');
+    return stored ? JSON.parse(stored) : [];
+  });
+  
+  const [activeChatId, setActiveChatId] = useState<string | null>(() => {
+    const stored = localStorage.getItem('orbit_active_chat_id');
+    if (stored) return stored;
+    
+    const storedConvos = localStorage.getItem('orbit_conversations');
+    if (storedConvos) {
+       const parsed = JSON.parse(storedConvos);
+       if (parsed.length > 0) return parsed[0].id;
+    }
+    return null;
+  });
+  
+  const [inputValue, setInputValue] = useState(() => {
+    return localStorage.getItem('orbit_chat_input') || '';
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [models, setModels] = useState<ModelItem[]>([]);
-  const [selectedModel, setSelectedModel] = useState('');
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('orbit_conversations');
-      if (stored) {
-        const parsed = JSON.parse(stored) as Conversation[];
-        setConversations(parsed);
-        if (parsed.length > 0) {
-          setActiveChatId(parsed[0].id);
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load chats from localStorage', e);
-    }
-  }, []);
+  
+  const [selectedModel, setSelectedModel] = useState(() => {
+    return localStorage.getItem('orbit_chat_model') || '';
+  });
+  
+  const [config, setConfig] = useState<ModelConfig>(() => {
+    const stored = localStorage.getItem('orbit_chat_config');
+    return stored ? JSON.parse(stored) : {
+      temperature: 0.7,
+      top_p: 0.9,
+      num_predict: 2048,
+      num_ctx: 8192,
+    };
+  });
 
   useEffect(() => {
     if (conversations.length > 0) {
@@ -35,6 +51,28 @@ export default function ChatPage() {
       localStorage.removeItem('orbit_conversations');
     }
   }, [conversations]);
+
+  useEffect(() => {
+    if (activeChatId) {
+      localStorage.setItem('orbit_active_chat_id', activeChatId);
+    } else {
+      localStorage.removeItem('orbit_active_chat_id');
+    }
+  }, [activeChatId]);
+
+  useEffect(() => {
+    localStorage.setItem('orbit_chat_input', inputValue);
+  }, [inputValue]);
+
+  useEffect(() => {
+    if (selectedModel) {
+      localStorage.setItem('orbit_chat_model', selectedModel);
+    }
+  }, [selectedModel]);
+
+  useEffect(() => {
+    localStorage.setItem('orbit_chat_config', JSON.stringify(config));
+  }, [config]);
 
   useEffect(() => {
     async function fetchModels() {
@@ -107,24 +145,47 @@ export default function ChatPage() {
       );
       setConversations([...updatedConversations]);
 
-      await sendChatMessage(selectedModel, requestMessages, (chunk) => {
-        assistantMessage.content += chunk;
+      const { metrics } = await sendChatMessage(
+        selectedModel,
+        requestMessages,
+        (chunk) => {
+          assistantMessage.content += chunk;
 
+          updatedConversations = updatedConversations.map((chat) =>
+            chat.id === currentChat!.id
+              ? {
+                  ...chat,
+                  messages: chat.messages.map((message, index) =>
+                    index === chat.messages.length - 1
+                      ? { ...message, content: assistantMessage.content }
+                      : message,
+                  ),
+                }
+              : chat,
+          );
+
+          setConversations([...updatedConversations]);
+        },
+        config
+      );
+
+      // Final update with metrics
+      if (metrics) {
+        assistantMessage.metrics = metrics;
         updatedConversations = updatedConversations.map((chat) =>
           chat.id === currentChat!.id
             ? {
                 ...chat,
                 messages: chat.messages.map((message, index) =>
                   index === chat.messages.length - 1
-                    ? { ...message, content: assistantMessage.content }
+                    ? { ...message, metrics }
                     : message,
                 ),
               }
             : chat,
         );
-
         setConversations([...updatedConversations]);
-      });
+      }
     } catch (error) {
       console.error('Chat API error:', error);
       const errorMessage: Message = {
@@ -164,6 +225,8 @@ export default function ChatPage() {
       models={models}
       selectedModel={selectedModel}
       setSelectedModel={setSelectedModel}
+      config={config}
+      setConfig={setConfig}
     />
   );
 }

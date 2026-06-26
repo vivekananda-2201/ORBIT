@@ -129,7 +129,6 @@
 }
 
 .slotCount {
-  margin-left: auto;
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--muted-foreground);
@@ -146,15 +145,94 @@
 .grid2 { display: grid; gap: 1rem; grid-template-columns: 1fr; }
 .grid3 { display: grid; gap: 1rem; grid-template-columns: 1fr; }
 .grid4 { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+.grid5 { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+.grid6 { display: grid; gap: 1rem; grid-template-columns: 1fr; }
 
 @media (min-width: 768px) {
   .grid2 { grid-template-columns: repeat(2, 1fr); }
   .grid3 { grid-template-columns: repeat(3, 1fr); }
   .grid4 { grid-template-columns: repeat(2, 1fr); }
+  .grid5 { grid-template-columns: repeat(2, 1fr); }
+  .grid6 { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (min-width: 1280px) {
   .grid4 { grid-template-columns: repeat(4, 1fr); }
+  .grid5 { grid-template-columns: repeat(3, 1fr); }
+  .grid6 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1536px) {
+  .grid5 { grid-template-columns: repeat(5, 1fr); }
+  .grid6 { grid-template-columns: repeat(6, 1fr); }
+}
+
+.slotBarRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.configToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+  padding: 0.25rem 0.5rem;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.configToggle:hover {
+  color: var(--foreground);
+}
+
+.configToggleActive {
+  background: var(--secondary);
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.configPanel {
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  padding: 1rem;
+}
+
+.configGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.configItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.configItem span {
+  font-family: var(--font-mono);
+}
+
+.configItem input[type=range] {
+  width: 100%;
+}
+
+.fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .emptyColumns {

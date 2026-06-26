@@ -1,16 +1,14 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   MessageSquareText,
   Swords,
   User,
   Settings,
-  Cpu,
-  HardDrive,
-  Activity,
-  Command,
   CircleDot,
 } from 'lucide-react';
-import { OrbitMark } from './OrbitMark';
+import { OrbitMark } from '../OrbitMark/OrbitMark';
+import { getModels } from '../../../services/ModelsMetaData';
 import styles from './AppShell.module.css';
 
 const NAV = [
@@ -31,17 +29,23 @@ function StatusChip({
   value,
   tone = 'default',
 }: {
-  icon: typeof Cpu;
+  icon: typeof CircleDot;
   label: string;
   value: string;
-  tone?: 'default' | 'good';
+  tone?: 'default' | 'good' | 'error';
 }) {
   return (
     <div className={styles.statusChip}>
       <Icon
         size={14}
         strokeWidth={1.75}
-        className={tone === 'good' ? styles.statusChipGood : undefined}
+        className={
+          tone === 'good'
+            ? styles.statusChipGood
+            : tone === 'error'
+              ? styles.statusChipError
+              : undefined
+        }
       />
       <span className={styles.statusLabel}>{label}</span>
       <span className={styles.statusValue}>{value}</span>
@@ -49,9 +53,28 @@ function StatusChip({
   );
 }
 
-export function AppShell() {
+export function AppShell({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
   const meta = ROUTE_META[pathname] ?? ROUTE_META['/'];
+  const [ollamaStatus, setOllamaStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+
+  useEffect(() => {
+    async function checkOllama() {
+      try {
+        const data = await getModels();
+        if (data.models && data.models.length > 0) {
+          setOllamaStatus('connected');
+        } else {
+          setOllamaStatus('disconnected');
+        }
+      } catch (error) {
+        setOllamaStatus('disconnected');
+      }
+    }
+    checkOllama();
+    const interval = setInterval(checkOllama, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className={styles.shell}>
@@ -106,19 +129,25 @@ export function AppShell() {
           </div>
 
           <div className={styles.headerActions}>
-            <StatusChip icon={CircleDot} label="Ollama" value="connected" tone="good" />
-            <StatusChip icon={Cpu} label="GPU" value="64°C" />
-            <StatusChip icon={HardDrive} label="VRAM" value="9.2/16GB" />
-            <StatusChip icon={Activity} label="avg" value="62 tok/s" tone="good" />
-            <button type="button" className={styles.commandBtn}>
-              <Command size={14} strokeWidth={1.75} />
-              <span className={styles.commandKey}>⌘K</span>
-            </button>
+            <StatusChip
+              icon={CircleDot}
+              label="Ollama"
+              value={ollamaStatus}
+              tone={ollamaStatus === 'connected' ? 'good' : 'error'}
+            />
           </div>
         </header>
 
         <main className={styles.main}>
-          <Outlet />
+          <div style={{ display: pathname === '/' ? 'block' : 'none', height: '100%' }}>
+            {React.Children.toArray(children)[0]}
+          </div>
+          <div style={{ display: pathname === '/arena' ? 'block' : 'none', height: '100%' }}>
+            {React.Children.toArray(children)[1]}
+          </div>
+          <div style={{ display: pathname === '/about' ? 'block' : 'none', height: '100%' }}>
+            {React.Children.toArray(children)[2]}
+          </div>
         </main>
       </div>
     </div>

@@ -230,6 +230,10 @@
   color: var(--primary);
 }
 
+.statusChipError {
+  color: var(--destructive, #ef4444);
+}
+
 .statusLabel {
   font-size: 11px;
   color: var(--muted-foreground);

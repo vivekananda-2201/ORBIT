@@ -1,4 +1,4 @@
-import { AboutContent } from '../components/orbit/about/AboutContent';
+import { AboutContent } from '../components/about/AboutContent/AboutContent';
 
 export default function AboutPage() {
   return <AboutContent />;

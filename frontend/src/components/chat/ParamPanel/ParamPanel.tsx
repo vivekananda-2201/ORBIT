@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Thermometer, Hash, Layers, Sparkles } from 'lucide-react';
-import type { ModelItem } from '../../../types/models_meta_data';
+import type { ModelItem, ModelConfig } from '../../../types';
 import styles from './ParamPanel.module.css';
 
 function Slider({
@@ -52,15 +51,15 @@ function getModelDisplayName(model: string): string {
 export function ParamPanel({
   modelId,
   models,
+  config,
+  setConfig,
 }: {
   modelId: string;
   models: ModelItem[];
+  config: ModelConfig;
+  setConfig: React.Dispatch<React.SetStateAction<ModelConfig>>;
 }) {
   const model = models.find((m) => m.model === modelId) ?? models[0];
-  const [temp, setTemp] = useState(0.7);
-  const [topP, setTopP] = useState(0.9);
-  const [maxTokens, setMaxTokens] = useState(2048);
-  const [ctx, setCtx] = useState(8192);
 
   return (
     <div className={styles.panel}>
@@ -92,40 +91,40 @@ export function ParamPanel({
           <Slider
             icon={Thermometer}
             label="Temperature"
-            value={temp}
+            value={config.temperature ?? 0.7}
             min={0}
             max={2}
             step={0.1}
-            onChange={setTemp}
+            onChange={(v) => setConfig((prev) => ({ ...prev, temperature: v }))}
             format={(v) => v.toFixed(1)}
           />
           <Slider
             icon={Sparkles}
             label="Top P"
-            value={topP}
+            value={config.top_p ?? 0.9}
             min={0}
             max={1}
             step={0.05}
-            onChange={setTopP}
+            onChange={(v) => setConfig((prev) => ({ ...prev, top_p: v }))}
             format={(v) => v.toFixed(2)}
           />
           <Slider
             icon={Hash}
             label="Max tokens"
-            value={maxTokens}
+            value={config.num_predict ?? 2048}
             min={256}
             max={8192}
             step={256}
-            onChange={setMaxTokens}
+            onChange={(v) => setConfig((prev) => ({ ...prev, num_predict: v }))}
           />
           <Slider
             icon={Layers}
             label="Context window"
-            value={ctx}
+            value={config.num_ctx ?? 8192}
             min={2048}
             max={32768}
             step={2048}
-            onChange={setCtx}
+            onChange={(v) => setConfig((prev) => ({ ...prev, num_ctx: v }))}
           />
         </div>
 
@@ -133,7 +132,9 @@ export function ParamPanel({
           <label htmlFor="system-prompt">System prompt</label>
           <textarea
             id="system-prompt"
-            defaultValue="You are ORBIT, a precise local research assistant. Be concise and technically accurate."
+            value={config.system_prompt ?? ''}
+            onChange={(e) => setConfig((prev) => ({ ...prev, system_prompt: e.target.value }))}
+            placeholder="You are ORBIT, a precise local research assistant. Be concise and technically accurate."
             rows={4}
             className={styles.textarea}
           />

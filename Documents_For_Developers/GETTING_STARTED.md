@@ -356,20 +356,20 @@ lsof -i :5000
 
 ### Development
 
-- Modify prompts in `frontend/src/components/PromptSuggestions.tsx`
-- Change the model in `backend/services/chat.py` (line: `model="qwen3.5:4b"`)
+- Modify prompts in `frontend/src/components/chat/PromptSuggestions/PromptSuggestions.tsx`
+- Change the fallback model in `backend/modules/chat/service.py`
 - Customize UI in `frontend/src/index.css`
 
 ### Common Modifications
 
 **Using a different Ollama model:**
 ```python
-# In backend/services/chat.py, change:
+# In backend/modules/chat/service.py, change the fallback:
 model="mistral:7b"  # or "neural-chat", "dolphin-mixtral", etc.
 ```
 
 **Adjust UI theme:**
-Edit CSS variables in `frontend/src/index.css` (lines 10-30)
+Edit CSS variables in `frontend/src/index.css`
 
 ---
 

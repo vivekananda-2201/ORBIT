@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, Box } from 'lucide-react';
-import type { ModelItem } from '../../../types/models_meta_data';
+import type { ModelItem } from '../../../types';
 import styles from './ModelPicker.module.css';
 
 const ACCENTS = [
