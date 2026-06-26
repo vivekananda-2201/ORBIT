@@ -1,7 +1,6 @@
 # pyrefly: ignore [missing-import]
 from ollama import chat
 
-
 def generate_response(message):
     response = chat(
         model="qwen3.5:4b",
@@ -12,9 +11,9 @@ def generate_response(message):
     return response['message']['content']
 
 
-def generate_stream(message):
+def generate_stream(message, modelname):
     response = chat(
-        model="qwen3.5:4b",
+        model=modelname,
         messages=message,
         think=False,
         stream=True,

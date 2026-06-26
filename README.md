@@ -75,11 +75,10 @@ ORBIT will gradually evolve into a complete AI engineering platform featuring:
 
 ### Backend
 - FastAPI (Python)
-- Ollama
 
 ### AI Layer
 - Python
-- Ollama (qwen3.5:4b)
+- Ollama
 - llama.cpp (Coming Soon)
 
 ### Database
@@ -109,7 +108,8 @@ ORBIT is currently under active development with focus on the chat interface and
 ✅ Markdown rendering with code blocks  
 ✅ Responsive dark-themed UI  
 ✅ Copy-to-clipboard for code  
-✅ Local Ollama integration  
+✅ Local Ollama integration 
+✅ Model Selection
 
 ---
 
