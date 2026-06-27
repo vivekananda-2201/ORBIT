@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Copy, RefreshCw, Sliders } from 'lucide-react';
+import { ArrowUp, Copy, RefreshCw, Sliders, Square } from 'lucide-react';
 import type { Conversation, ModelConfig } from '../../../types';
 import type { ModelItem } from '../../../types';
 import { ChatHistory } from '../ChatHistory/ChatHistory';
@@ -46,6 +46,7 @@ export function ChatWorkspace({
   setInputValue,
   isLoading,
   onSendMessage,
+  onStopGeneration,
   onSelectChat,
   onDeleteChat,
   onNewChat,
@@ -62,6 +63,7 @@ export function ChatWorkspace({
   setInputValue: (val: string) => void;
   isLoading: boolean;
   onSendMessage: (text?: string) => void;
+  onStopGeneration?: () => void;
   onSelectChat: (id: string) => void;
   onDeleteChat: (e: React.MouseEvent, id: string) => void;
   onNewChat: () => void;
@@ -136,7 +138,8 @@ export function ChatWorkspace({
                   message.role === 'assistant' &&
                   index === activeChat!.messages.length - 1 &&
                   isLoading &&
-                  !message.content;
+                  !message.content &&
+                  !message.think;
 
                 if (isLastAssistant) {
                   return (
@@ -166,7 +169,15 @@ export function ChatWorkspace({
                       <OrbitMark className={styles.avatarMark} />
                     </div>
                     <div className={styles.assistantBody}>
-                      <MessageItem message={message} compact />
+                      <MessageItem
+                        message={message}
+                        compact
+                        isStreaming={
+                          isLoading &&
+                          message.role === 'assistant' &&
+                          index === activeChat!.messages.length - 1
+                        }
+                      />
                       <div className={styles.metricsBar}>
                         {message.metrics && (
                           <MetricsBar
@@ -210,15 +221,26 @@ export function ChatWorkspace({
                 className={styles.textarea}
                 disabled={isLoading}
               />
-              <button
-                type="button"
-                onClick={() => onSendMessage()}
-                disabled={!inputValue.trim() || isLoading}
-                className={styles.sendBtn}
-                aria-label="Send"
-              >
-                <ArrowUp size={16} strokeWidth={2.25} />
-              </button>
+              {isLoading ? (
+                <button
+                  type="button"
+                  onClick={onStopGeneration}
+                  className={styles.sendBtn}
+                  aria-label="Stop generation"
+                >
+                  <Square size={14} fill="currentColor" strokeWidth={2} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onSendMessage()}
+                  disabled={!inputValue.trim()}
+                  className={styles.sendBtn}
+                  aria-label="Send"
+                >
+                  <ArrowUp size={16} strokeWidth={2.25} />
+                </button>
+              )}
             </div>
             <p className={styles.composerHint}>
               Responses are generated locally · ORBIT does not send your data anywhere

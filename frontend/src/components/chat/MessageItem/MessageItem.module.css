@@ -284,6 +284,105 @@
 }
 
 /* --- Inline Code --- */
+.messageWrapper.assistant .messageBubble .inlineCode {
+  background-color: var(--muted);
+  color: var(--foreground);
+  padding: 0.125rem 0.25rem;
+  border-radius: calc(var(--radius) - 2px);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.thinkBox {
+  margin: 0.5rem 0 1rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: color-mix(in oklch, var(--muted) 40%, transparent);
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.thinkBoxActive {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 12px -4px rgba(99, 102, 241, 0.25);
+}
+
+.thinkSummary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--muted);
+  border: none;
+  text-align: left;
+  font-family: inherit;
+}
+
+.thinkSummary:hover {
+  color: var(--foreground);
+}
+
+.thinkIcon {
+  font-size: 1rem;
+}
+
+.thinkTokens {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  background: var(--background);
+  padding: 0.1rem 0.4rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  transition: color 0.2s, border-color 0.2s;
+  font-variant-numeric: tabular-nums;
+}
+
+.thinkTokensActive {
+  color: var(--accent-text, #818cf8);
+  border-color: rgba(99, 102, 241, 0.3);
+  animation: tokenPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tokenPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.thinkChevron {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  margin-left: 0.25rem;
+}
+
+.thinkContent {
+  padding: 0.75rem 1rem;
+  font-size: 0.9em;
+  color: var(--muted-foreground);
+  border-top: 1px solid var(--border);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.thinkCursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--accent-text, #818cf8);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+}
+
+/* Ensure think content keeps formatting */
+.thinkContent > *:first-child { margin-top: 0; }
+.thinkContent > *:last-child { margin-bottom: 0; }
+
 .messageWrapper.assistant .messageBubble .inlineCode,
 .messageWrapper.assistant .messageBubble code:not(.codeBlockContent code) {
   font-family: var(--font-mono);

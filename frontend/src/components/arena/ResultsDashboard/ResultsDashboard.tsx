@@ -16,7 +16,9 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  Legend
+  Legend,
+  LineChart,
+  Line
 } from 'recharts';
 import { Gauge, Timer, Zap, TrendingUp, Award, ArrowDownUp, Hash, Activity } from 'lucide-react';
 import type { ModelItem, ArenaModelResult, ArenaRunState } from '../../../types';
@@ -148,6 +150,22 @@ export function ResultsDashboard({
     { metric: 'Output Vol', ...Object.fromEntries(enriched.map(r => [r.displayName, Math.round((r.response_tokens / Math.max(...enriched.map(x=>x.response_tokens), 1)) * 100)])) }
   ];
 
+  // Combine time series data
+  const timeSeriesCombined = enriched.reduce((acc, curr) => {
+    curr.time_series?.forEach(dp => {
+      let existing = acc.find(x => x.time === dp.time);
+      if (!existing) {
+        existing = { time: dp.time };
+        // Initialize all models to null for this new time slot
+        enriched.forEach(m => { existing[m.displayName] = null; });
+        acc.push(existing);
+      }
+      existing[curr.displayName] = dp.tok_per_sec;
+    });
+    return acc;
+  }, [] as any[]);
+  timeSeriesCombined.sort((a: any, b: any) => a.time - b.time);
+
   return (
     <div className={styles.dashboard}>
       <div className={styles.inner}>
@@ -180,12 +198,12 @@ export function ResultsDashboard({
           <Panel title="Throughput Comparison (tok/s)" icon={Gauge}>
             <div className={styles.chartBox}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sortedByToks} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
-                  <CartesianGrid stroke="var(--border)" horizontal={false} />
-                  <XAxis type="number" stroke="var(--muted-foreground)" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-                  <YAxis type="category" dataKey="displayName" stroke="var(--muted-foreground)" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} width={100} />
+                <BarChart data={sortedByToks} margin={{ top: 16, right: 0, left: -16, bottom: 0 }}>
+                  <CartesianGrid stroke="var(--border)" vertical={false} />
+                  <XAxis type="category" dataKey="displayName" stroke="var(--muted-foreground)" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+                  <YAxis type="number" stroke="var(--muted-foreground)" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
                   <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--secondary)' }} />
-                  <Bar dataKey="tokens_per_sec" name="tok/s" radius={[0, 4, 4, 0]}>
+                  <Bar dataKey="tokens_per_sec" name="tok/s" radius={[4, 4, 0, 0]}>
                     {sortedByToks.map((r) => (
                       <Cell key={r.model} fill={r.accent} />
                     ))}
@@ -212,6 +230,24 @@ export function ResultsDashboard({
             </div>
           </Panel>
         </div>
+
+        {timeSeriesCombined.length > 0 && (
+          <Panel title="Real-time Throughput (tok/s over time)" icon={Activity}>
+            <div className={styles.chartBox} style={{ height: '240px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={timeSeriesCombined} margin={{ top: 16, right: 16, left: -16, bottom: 0 }}>
+                  <CartesianGrid stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="time" name="Time (s)" stroke="var(--muted-foreground)" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}s`} />
+                  <YAxis type="number" stroke="var(--muted-foreground)" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+                  <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'var(--border)' }} />
+                  {enriched.map((r) => (
+                    <Line key={r.model} type="monotone" dataKey={r.displayName} stroke={r.accent} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 0 }} connectNulls={false} />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </Panel>
+        )}
 
         <div className={`${styles.chartGrid} ${styles.chartGridHalf}`}>
           <Panel title="Timeline Breakdown (Load vs TTFT vs Gen)" icon={Timer}>

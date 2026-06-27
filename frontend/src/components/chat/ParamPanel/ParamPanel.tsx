@@ -139,6 +139,18 @@ export function ParamPanel({
             className={styles.textarea}
           />
         </div>
+
+        <div className={styles.toggleRow}>
+          <label className={styles.toggleLabel}>
+            <input
+              type="checkbox"
+              checked={config.think ?? false}
+              onChange={(e) => setConfig((prev) => ({ ...prev, think: e.target.checked }))}
+              className={styles.checkbox}
+            />
+            <span className={styles.toggleText}>Enable Think Mode (Chain of Thought)</span>
+          </label>
+        </div>
       </div>
 
       <div className={styles.footer}>

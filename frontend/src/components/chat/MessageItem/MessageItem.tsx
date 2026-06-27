@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -11,10 +11,20 @@ import styles from './MessageItem.module.css';
 interface MessageItemProps {
   message: Message;
   compact?: boolean;
+  isStreaming?: boolean;
 }
 
-export const MessageItem: React.FC<MessageItemProps> = ({ message, compact = false }) => {
+export const MessageItem: React.FC<MessageItemProps> = ({ message, compact = false, isStreaming = false }) => {
   const isUser = message.role === 'user';
+  const [thinkOpen, setThinkOpen] = useState(true);
+
+  // Count thinking chunks — approximate 1 chunk ≈ 1 token for real-time display
+  const thinkChunkCount = message.think
+    ? message.think.split(/\s+/).filter(Boolean).length
+    : 0;
+
+  // While streaming thinking and no content yet, always show the think box open
+  const isActivelyThinking = isStreaming && !!message.think && !message.content;
 
   const content = (
     <>
@@ -22,6 +32,38 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, compact = fal
           <div style={{ whiteSpace: 'pre-wrap' }}>{message.content}</div>
         ) : (
           <>
+            {message.think && (
+              <div className={`${styles.thinkBox} ${isActivelyThinking ? styles.thinkBoxActive : ''}`}>
+                <button
+                  type="button"
+                  className={styles.thinkSummary}
+                  onClick={() => setThinkOpen((o) => !o)}
+                  aria-expanded={thinkOpen}
+                >
+                  <span className={styles.thinkIcon}>🧠</span>
+                  {isActivelyThinking ? 'Thinking…' : 'Thought Process'}
+                  <span className={`${styles.thinkTokens} ${isActivelyThinking ? styles.thinkTokensActive : ''}`}>
+                    {thinkChunkCount} tokens
+                  </span>
+                  <span className={styles.thinkChevron}>
+                    {thinkOpen ? '▾' : '▸'}
+                  </span>
+                </button>
+                {thinkOpen && (
+                  <div className={styles.thinkContent}>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkMath, remarkGfm]}
+                      rehypePlugins={[rehypeKatex]}
+                    >
+                      {message.think}
+                    </ReactMarkdown>
+                    {isActivelyThinking && (
+                      <span className={`${styles.thinkCursor} orbit-blink`} />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             <ReactMarkdown
               remarkPlugins={[remarkMath, remarkGfm]}
               rehypePlugins={[rehypeKatex]}

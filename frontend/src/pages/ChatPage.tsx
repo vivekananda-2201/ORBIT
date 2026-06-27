@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChatWorkspace } from '../components/chat/ChatWorkspace/ChatWorkspace';
 import type { Conversation, Message, ModelConfig } from '../types';
 import type { ModelItem } from '../types';
@@ -29,6 +29,7 @@ export default function ChatPage() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [models, setModels] = useState<ModelItem[]>([]);
+  const abortControllerRef = useRef<AbortController | null>(null);
   
   const [selectedModel, setSelectedModel] = useState(() => {
     return localStorage.getItem('orbit_chat_model') || '';
@@ -137,7 +138,7 @@ export default function ChatPage() {
 
     try {
       const requestMessages = [...currentChat.messages];
-      const assistantMessage: Message = { role: 'assistant', content: '' };
+      const assistantMessage: Message = { role: 'assistant', content: '', think: '' };
 
       currentChat.messages = [...currentChat.messages, assistantMessage];
       updatedConversations = updatedConversations.map((chat) =>
@@ -145,11 +146,14 @@ export default function ChatPage() {
       );
       setConversations([...updatedConversations]);
 
+      abortControllerRef.current = new AbortController();
+
       const { metrics } = await sendChatMessage(
         selectedModel,
         requestMessages,
-        (chunk) => {
+        (chunk, thinkChunk) => {
           assistantMessage.content += chunk;
+          if (thinkChunk) assistantMessage.think += thinkChunk;
 
           updatedConversations = updatedConversations.map((chat) =>
             chat.id === currentChat!.id
@@ -157,7 +161,7 @@ export default function ChatPage() {
                   ...chat,
                   messages: chat.messages.map((message, index) =>
                     index === chat.messages.length - 1
-                      ? { ...message, content: assistantMessage.content }
+                      ? { ...message, content: assistantMessage.content, think: assistantMessage.think }
                       : message,
                   ),
                 }
@@ -166,7 +170,8 @@ export default function ChatPage() {
 
           setConversations([...updatedConversations]);
         },
-        config
+        config,
+        abortControllerRef.current.signal
       );
 
       // Final update with metrics
@@ -187,6 +192,11 @@ export default function ChatPage() {
         setConversations([...updatedConversations]);
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        // Ignored: User cancelled the stream
+        return;
+      }
+
       console.error('Chat API error:', error);
       const errorMessage: Message = {
         role: 'assistant',
@@ -206,7 +216,14 @@ export default function ChatPage() {
 
       setConversations([...updatedConversations]);
     } finally {
+      abortControllerRef.current = null;
       setIsLoading(false);
+    }
+  };
+
+  const handleStopGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
   };
 
@@ -219,6 +236,7 @@ export default function ChatPage() {
       setInputValue={setInputValue}
       isLoading={isLoading}
       onSendMessage={handleSendMessage}
+      onStopGeneration={handleStopGeneration}
       onSelectChat={setActiveChatId}
       onDeleteChat={handleDeleteChat}
       onNewChat={handleNewChat}

@@ -1,6 +1,7 @@
 export interface Message {
   role: 'system' | 'user' | 'assistant';
   content: string;
+  think?: string;
   metrics?: any;
 }
 
@@ -43,6 +44,7 @@ export interface ModelConfig {
     repeat_penalty?: number;
     seed?: number;
     system_prompt?: string;
+    think?: boolean;
 }
 
 // ── Arena Types ────────────────────────────────────────────────────
@@ -62,6 +64,7 @@ export interface ArenaModelResult {
     load_time_ms: number;
     response_tokens: number;
     prompt_tokens: number;
+    time_series?: { time: number, tokens: number, tok_per_sec: number }[];
 }
 
 export type ArenaRunState = 'idle' | 'running' | 'done';
@@ -72,4 +75,5 @@ export interface BenchmarkRecord {
   prompt: string;
   models: string[];
   results: ArenaModelResult[];
+  time_series?: any[];
 }

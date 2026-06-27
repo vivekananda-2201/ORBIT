@@ -1,4 +1,5 @@
 import type { ModelConfig, ArenaModelResult } from '../types';
+import { extractThinkChunk } from './thinkExtractor';
 
 const API_BASE_URL = 'http://127.0.0.1:5000/api/v1';
 
@@ -37,6 +38,8 @@ export async function runArena(
 
   const decoder = new TextDecoder();
   let buffer = '';
+  // Per-model state machine for <think> tag extraction
+  const insideThinkMap: Record<string, boolean> = {};
 
   while (true) {
     const { done, value } = await reader.read();
@@ -57,11 +60,23 @@ export async function runArena(
 
         switch (event.type) {
           case 'start':
+            insideThinkMap[event.model] = false;
             callbacks.onModelStart(event.model);
             break;
-          case 'chunk':
-            callbacks.onModelChunk?.(event.model, event.text);
+          case 'chunk': {
+            // Extract <think> tags from the raw text stream
+            const extracted = extractThinkChunk(
+              event.text || '',
+              insideThinkMap[event.model] ?? false,
+            );
+            insideThinkMap[event.model] = extracted.insideThink;
+            // Only emit clean text to the chunk callback (Arena only shows responses)
+            const cleanText = extracted.text;
+            if (cleanText) {
+              callbacks.onModelChunk?.(event.model, cleanText);
+            }
             break;
+          }
           case 'result':
             callbacks.onModelResult(event.model, event.data as ArenaModelResult);
             break;
