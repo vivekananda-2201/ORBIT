@@ -36,6 +36,8 @@ The project aims to simplify the workflow of AI developers by providing a unifie
 
 ### 1. Chat Workspace
 - **Real-time SSE Streaming**: Live chunk-by-chunk markdown rendering.
+- **Think Mode (Chain of Thought)**: Expandable thought process blocks with dynamic token counters for reasoning models.
+- **Stop Generation**: Graceful stream abortion using AbortControllers.
 - **System Prompts & Parameters**: Fine-tune context length, temperature, top-p, and set custom personas.
 - **Performance Metrics**: View native token metrics (Tokens/sec, Time-To-First-Token) immediately after generation.
 - **Session Persistence**: Drafts, configurations, and chat histories are seamlessly saved to `localStorage`.
@@ -43,12 +45,13 @@ The project aims to simplify the workflow of AI developers by providing a unifie
 ### 2. Model Arena
 - **Multi-Model Benchmarking**: Queue up to 6 local Ollama models simultaneously.
 - **Sequential Execution**: Models are benchmarked one-by-one to preserve system resources and hardware safety.
-- **Live Chunk Streaming**: Watch each model generate its response in real-time.
+- **Live Chunk Streaming**: Watch each model generate its response in real-time, throttled for UI performance.
 
 ### 3. Analysis Dashboard
+- **Real-time Throughput**: Line Chart tracking tokens/sec across the duration of the entire benchmark generation.
+- **Throughput Comparison**: Vertical Bar Chart directly comparing total speed per model.
 - **Performance Footprint**: Visual Radar Chart normalizing Speed, Latency, Efficiency, and Volume.
 - **Timeline Breakdown**: Stacked Composed Chart detailing Load Time, TTFT, and Generation Time.
-- **Hardware Integration**: Monitor simulated local VRAM and GPU thermals.
 
 ---
 

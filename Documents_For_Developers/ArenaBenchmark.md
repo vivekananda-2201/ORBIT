@@ -42,10 +42,15 @@ Once Ollama sends `{"done": true}`, it attaches telemetry data. `llm.py` extract
 ### 2. Frontend Accumulation
 `arenaService.ts` parses this stream. It invokes `onChunk` for every text delta (enabling the live-typing UI) and returns the final `metrics` dict.
 
-`ArenaWorkspace.tsx` saves this dictionary to a global `results` array in React state, which is immediately synchronized to `localStorage`.
+`ArenaWorkspace.tsx` manages a `useRef` queue to handle incoming stream chunks. Because updating React state for every token across up to 6 models causes massive UI lag, stream processing is throttled. Only one render is triggered every ~32ms (roughly 30 FPS).
+Simultaneously, `ArenaWorkspace.tsx` captures timestamps for every chunk to generate 1-second bin throughput data.
+At the end of each model run, this dictionary and time series array is saved to a global `results` array in React state, which is synchronized to `localStorage`.
 
 ### 3. Dashboard Visualization
 The `ResultsDashboard.tsx` component receives the `results` array and binds it to `recharts`:
 
+- **LineChart**: A time-series chart showing Real-Time Throughput (tok/s) across the entire benchmark, tracking how speeds degrade or increase over time.
+- **BarChart (Vertical)**: A vertical column chart to compare raw token/sec speeds.
 - **RadarChart**: Iterates through all models, mapping `Tokens/sec` (Speed), `TTFT` (Latency), and `eval_count` (Volume) to polygon vertices.
 - **ComposedChart**: Uses the raw timings (`load_time_ms`, `ttft_ms`, and `eval_duration` in ms) to create stacked horizontal timelines comparing total generation lifespan across models.
+

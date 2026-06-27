@@ -49,7 +49,13 @@ React `useEffect` hooks constantly sync the `activeChatId`, input drafts, and co
 The `ParamPanel` component allows users to dynamically override generation parameters.
 
 - **System Prompt**: Pre-injected at the top of the conversation array on the backend to instruct model behavior.
+- **Think Mode (Chain of Thought)**: If supported by the model, passing `think=true` instructs Ollama to yield `<think>` blocks. `llm.py` natively separates these reasoning chunks from standard text, allowing the frontend to render a dedicated, expandable "Thought Process" UI box above the final response, complete with a dynamic reasoning token count.
 - **Temperature**: Controls generation randomness (higher = more creative).
 - **Top P**: Nucleus sampling cutoff.
 - **Context Window (`num_ctx`)**: Defines the maximum token memory of the model before it drops older messages.
 - **Max Tokens (`num_predict`)**: Caps the maximum length of a single generation.
+
+---
+
+## 🛑 Stop Generation
+The chat interface implements an `AbortController` in `chatService.ts` that triggers when the user presses the "Stop" button during a stream. This gracefully terminates the SSE connection and leaves the partial response exactly as generated, allowing the user to seamlessly resume or modify their prompt.
