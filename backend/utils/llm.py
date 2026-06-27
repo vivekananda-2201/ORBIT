@@ -44,7 +44,7 @@ def stream_model(model_name: str, messages: list[dict], config: ModelConfig | No
     kwargs = {
         "model": model_name,
         "messages": messages,
-        "think": False,
+        "think": config.think if config and config.think is not None else False,
         "stream": True,
     }
     if options:
@@ -55,9 +55,11 @@ def stream_model(model_name: str, messages: list[dict], config: ModelConfig | No
     full_text = ""
     for chunk in response:
         content = chunk.get("message", {}).get("content", "")
-        if content:
+        thinking = chunk.get("message", {}).get("thinking", "")
+        
+        if content or thinking:
             full_text += content
-            yield {"type": "chunk", "text": content}
+            yield {"type": "chunk", "text": content, "think": thinking}
             
         if chunk.get("done"):
             # This is the final chunk that contains native timing metrics

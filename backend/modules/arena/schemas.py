@@ -12,6 +12,7 @@ class ModelConfig(BaseModel):
     system_prompt: Optional[str] = None
     repeat_penalty: Optional[float] = None
     seed: Optional[int] = None
+    think: Optional[bool] = False
 
 
 class ArenaRequest(BaseModel):
