@@ -1,10 +1,8 @@
 # ORBIT Lab
 
-### Operational Research and Benchmarking Interface for Transformers
+ORBIT Lab is a lightweight, local-first AI models comparision benchmarking focused on open-source language models.
 
-ORBIT Lab is a lightweight, local-first AI engineering workspace focused on open-source language models.
-
-The project aims to simplify the workflow of AI developers by providing a unified environment for managing, testing, evaluating, and benchmarking local AI systems running via Ollama.
+The project aims to simplify the workflow of AI developers by providing a simple and minimal way to compare multiple local models.
 
 ---
 
@@ -35,6 +33,9 @@ The project aims to simplify the workflow of AI developers by providing a unifie
 ## 🎯 Core Features
 
 ### 1. Chat Workspace
+<p align="center">
+  <img src="./assets/screenshots/chat.png" width="88%">
+</p>
 - **Real-time SSE Streaming**: Live chunk-by-chunk markdown rendering.
 - **Think Mode (Chain of Thought)**: Expandable thought process blocks with dynamic token counters for reasoning models.
 - **Stop Generation**: Graceful stream abortion using AbortControllers.
@@ -43,11 +44,17 @@ The project aims to simplify the workflow of AI developers by providing a unifie
 - **Session Persistence**: Drafts, configurations, and chat histories are seamlessly saved to `localStorage`.
 
 ### 2. Model Arena
+<p align="center">
+  <img src="./assets/screenshots/arena.png" width="88%">
+</p>
 - **Multi-Model Benchmarking**: Queue up to 6 local Ollama models simultaneously.
 - **Sequential Execution**: Models are benchmarked one-by-one to preserve system resources and hardware safety.
 - **Live Chunk Streaming**: Watch each model generate its response in real-time, throttled for UI performance.
 
 ### 3. Analysis Dashboard
+<p align="center">
+  <img src="./assets/screenshots/arena_analytics.png" width="88%">
+</p>
 - **Real-time Throughput**: Line Chart tracking tokens/sec across the duration of the entire benchmark generation.
 - **Throughput Comparison**: Vertical Bar Chart directly comparing total speed per model.
 - **Performance Footprint**: Visual Radar Chart normalizing Speed, Latency, Efficiency, and Volume.
